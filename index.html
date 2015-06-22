@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>SOI2</title>
+    <!--a small Javascript framework that assists the Babylon.js cameras-->
+    <script src="libs/hand.minified-1.2.js"></script>
+    <!--an optional physics 'engine' that allows WebGL shapes (meshes) to act like real life objects-->
+    <script src="libs/cannon.js"></script>
+    <!--a different physics 'engine' that performs a similar function to cannon.js, but is generally faster although it lacks some of the more advanced features present in cannon.js-->
+    <script src="libs/oimo.js"></script>
+    <!--the Babylon.js framework-->
+    <script src="libs/babylon.js"></script>
+
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0 ;
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <script src="js/createScene.js"></script>
+</body>
+</html>

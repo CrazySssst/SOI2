@@ -76,12 +76,18 @@ var SOI2 = {
 
     //游戏内容加载
     load: function () {
-        var ground = BABYLON.Mesh.CreateGround("ground", 100, 100, 2, this.scene);
+        var ground = BABYLON.Mesh.CreateGround("ground", 500, 500, 2, this.scene);
         ground.checkCollisions = true;
+        var materialPlane = new BABYLON.StandardMaterial("texturePlane", this.scene);
+        materialPlane.diffuseTexture = new BABYLON.Texture("assets/image/grass.jpg", this.scene);
+        materialPlane.diffuseTexture.uScale = 10;//Repeat 10 times on the Vertical Axes
+        materialPlane.diffuseTexture.vScale = 10;//Repeat 10 times on the Horizontal Axes
+        materialPlane.backFaceCulling = false;//Allways show the front and the back of an element
+        ground.material = materialPlane;
 
         this.tank = new Tank(this.scene);
         this.tank.material = new BABYLON.StandardMaterial("tankMaterial", this.scene);
-        this.tank.material.diffuseColor = new BABYLON.Color3(0, 0, 0.5);
+        this.tank.material.diffuseColor = new BABYLON.Color3(32 / 255, 178 / 255, 170 / 255);
     },
 
     //游戏逻辑更新

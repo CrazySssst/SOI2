@@ -10,19 +10,23 @@ var SOI2 = {
     camera: null,//相机
     light: null,//光照
 
+    tank: null,//坦克
+
     //游戏初始化
     init: function () {
         this.canvas = document.getElementById("gameCanvas");
         this.engine = new BABYLON.Engine(this.canvas, true);
 
         this.scene = new BABYLON.Scene(this.engine);
+        this.scene.gravity = new BABYLON.Vector3(0, -9.18, 0);
+        this.scene.collisionsEnabled = true;
 
-        this.camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 10, -30), this.scene);
-        this.camera.setTarget(new BABYLON.Vector3(0, 10, 0));
+        this.camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 7, 0), this.scene);
+        this.camera.setTarget(new BABYLON.Vector3(0, 7, 10));
         this.camera.attachControl(this.canvas);
-        this.camera.ellipsoid = new BABYLON.Vector3(5, 5, 5);
+        this.camera.ellipsoid = new BABYLON.Vector3(1, 3.5, 1);
         this.camera.checkCollisions = true;
-//        this.camera.applyGravity = true;
+        this.camera.applyGravity = true;
         //使用按键WASD控制场景
         this.camera.keysUp = [87];
         this.camera.keysDown = [83];
@@ -61,9 +65,12 @@ var SOI2 = {
         document.addEventListener("mozpointerlockchange", pointerlockchange, false);
         document.addEventListener("webkitpointerlockchange", pointerlockchange, false);
 
+        //加载游戏内容
+        SOI2.load();
         //建立60FPS的游戏循环
         this.engine.runRenderLoop(function () {
-            SOI2.scene.render();
+            SOI2.update();
+            SOI2.draw();
         });
     },
 
@@ -71,13 +78,28 @@ var SOI2 = {
     load: function () {
         var ground = BABYLON.Mesh.CreateGround("ground", 100, 100, 2, this.scene);
         ground.checkCollisions = true;
+
+        this.tank = new Tank(this.scene);
+        this.tank.material = new BABYLON.StandardMaterial("tankMaterial", this.scene);
+        this.tank.material.diffuseColor = new BABYLON.Color3(0, 0, 0.5);
+    },
+
+    //游戏逻辑更新
+    update: function () {
+        SOI2.tank.position.x = SOI2.camera.position.x;
+        SOI2.tank.position.y = SOI2.camera.position.y - 4;
+        SOI2.tank.position.z = SOI2.camera.position.z;
+    },
+
+    //游戏画面绘制
+    draw: function () {
+        SOI2.scene.render();
     }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
     if (BABYLON.Engine.isSupported()) {
         SOI2.init();
-        SOI2.load();
     } else {
         alert("您的浏览器无法运行游戏");
     }

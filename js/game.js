@@ -17,14 +17,16 @@ var SOI2 = {
         this.canvas = document.getElementById("gameCanvas");
         this.engine = new BABYLON.Engine(this.canvas, true);
 
+        //初始化场景
         this.scene = new BABYLON.Scene(this.engine);
         this.scene.gravity = new BABYLON.Vector3(0, -9.18, 0);
         this.scene.collisionsEnabled = true;
 
+        //初始化相机
         this.camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 7, 0), this.scene);
         this.camera.setTarget(new BABYLON.Vector3(0, 7, 10));
         this.camera.attachControl(this.canvas);
-        this.camera.ellipsoid = new BABYLON.Vector3(1, 3.5, 1);
+        this.camera.ellipsoid = new BABYLON.Vector3(3, 3.5, 3);
         this.camera.checkCollisions = true;
         this.camera.applyGravity = true;
         //使用按键WASD控制场景
@@ -32,10 +34,11 @@ var SOI2 = {
         this.camera.keysDown = [83];
         this.camera.keysLeft = [65];
         this.camera.keysRight = [68];
-        this.camera.speed = 1;
+        this.camera.speed = 4;
         this.camera.inertia = 0.9;
         this.camera.angularSensibility = 5000;
 
+        //初始化灯光
         this.light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), this.scene);
 
         //鼠标锁定
@@ -76,10 +79,40 @@ var SOI2 = {
 
     //游戏内容加载
     load: function () {
-        var ground = BABYLON.Mesh.CreateGround("ground", 500, 500, 2, this.scene);
+        // Skybox
+        var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, this.scene);
+        var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("asset/image/skybox/skybox", this.scene);
+        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+        skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+        skybox.material = skyboxMaterial;
+        skybox.position.y = 400;
+        //边界挡板
+        var planeZ = BABYLON.Mesh.CreatePlane("planeZ", 1100, this.scene);
+        planeZ.position.y = 500;
+        planeZ.position.z = 501;
+        planeZ.checkCollisions = true;
+        var planeZC = BABYLON.Mesh.CreatePlane("planeZC", 1100, this.scene);
+        planeZC.position.y = 500;
+        planeZC.position.z = -501;
+        planeZC.checkCollisions = true;
+        var planeX = BABYLON.Mesh.CreatePlane("planeX", 1100, this.scene);
+        planeX.position.y = 500;
+        planeX.position.x = 501;
+        planeX.rotation.y = Math.PI / 2;
+        planeX.checkCollisions = true;
+        var planeXC = BABYLON.Mesh.CreatePlane("planeXC", 1100, this.scene);
+        planeXC.position.y = 500;
+        planeXC.position.x = -501;
+        planeXC.rotation.y = -Math.PI / 2;
+        planeXC.checkCollisions = true;
+        //地板
+        var ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 2, this.scene);
         ground.checkCollisions = true;
         var materialPlane = new BABYLON.StandardMaterial("texturePlane", this.scene);
-        materialPlane.diffuseTexture = new BABYLON.Texture("assets/image/grass.jpg", this.scene);
+        materialPlane.diffuseTexture = new BABYLON.Texture("asset/image/grass.jpg", this.scene);
         materialPlane.diffuseTexture.uScale = 10;//Repeat 10 times on the Vertical Axes
         materialPlane.diffuseTexture.vScale = 10;//Repeat 10 times on the Horizontal Axes
         materialPlane.backFaceCulling = false;//Allways show the front and the back of an element
@@ -88,6 +121,9 @@ var SOI2 = {
         this.tank = new Tank(this.scene);
         this.tank.material = new BABYLON.StandardMaterial("tankMaterial", this.scene);
         this.tank.material.diffuseColor = new BABYLON.Color3(32 / 255, 178 / 255, 170 / 255);
+
+        //背景音乐
+        var music = new BABYLON.Sound("Fighting", "asset/music/background.mp3", this.scene, null, { loop: true, autoplay: true});
     },
 
     //游戏逻辑更新

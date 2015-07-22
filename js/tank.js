@@ -6,16 +6,15 @@ Tank = function(scene) {
     BABYLON.Mesh.call(this, "tank", scene);
     BABYLON.VertexData.CreateBox(6).applyToMesh(this, false);
 
-    this.position = new BABYLON.Vector3(0, 3, 0);
+    this.position = new BABYLON.Vector3(0, 3, 0);//坦克位置
+    this.life = 100;//生命值
 
-    this.killed = false;
-    this.speed = 1;
-    this.moveLeft =false;
-    this.moveRight = false;
-    this.moveForward = false;
-    this.moveBack = false;
-
-//    this.initMovement();
+    this.attackDamage = 30;//攻击伤害
+    this.rotateSpeed = 5000;//旋转速度
+    this.bulletSpeed = 50;//炮弹速度
+    this.attackSpeed = 5;//攻击速度
+    this.moveSpeed = 1;//坦克速度
+    this.protectDamage = 10;//防御减伤
 }
 
 Tank.prototype = Object.create(BABYLON.Mesh.prototype);

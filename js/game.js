@@ -26,7 +26,7 @@ var SOI2 = {
         this.camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 7, 0), this.scene);
         this.camera.setTarget(new BABYLON.Vector3(0, 7, 10));
         this.camera.attachControl(this.canvas);
-        this.camera.ellipsoid = new BABYLON.Vector3(3, 3.5, 3);
+        this.camera.ellipsoid = new BABYLON.Vector3(3, 3, 3);
         this.camera.checkCollisions = true;
         this.camera.applyGravity = true;
         //使用按键WASD控制场景
@@ -68,6 +68,10 @@ var SOI2 = {
         document.addEventListener("mozpointerlockchange", pointerlockchange, false);
         document.addEventListener("webkitpointerlockchange", pointerlockchange, false);
 
+        var map = new Map();
+        map.createRandomMap();
+        map.drawMap(this.scene);
+
         //加载游戏内容
         SOI2.load();
         //建立60FPS的游戏循环
@@ -90,26 +94,26 @@ var SOI2 = {
         skybox.material = skyboxMaterial;
         skybox.position.y = 400;
         //边界挡板
-        var planeZ = BABYLON.Mesh.CreatePlane("planeZ", 1100, this.scene);
+        var planeZ = BABYLON.Mesh.CreatePlane("planeZ", 1000, this.scene);
         planeZ.position.y = 500;
-        planeZ.position.z = 501;
+        planeZ.position.z = 500.5;
         planeZ.checkCollisions = true;
-        var planeZC = BABYLON.Mesh.CreatePlane("planeZC", 1100, this.scene);
+        var planeZC = BABYLON.Mesh.CreatePlane("planeZC", 1000, this.scene);
         planeZC.position.y = 500;
-        planeZC.position.z = -501;
+        planeZC.position.z = -500.5;
         planeZC.checkCollisions = true;
-        var planeX = BABYLON.Mesh.CreatePlane("planeX", 1100, this.scene);
+        var planeX = BABYLON.Mesh.CreatePlane("planeX", 1000, this.scene);
         planeX.position.y = 500;
-        planeX.position.x = 501;
+        planeX.position.x = 500.5;
         planeX.rotation.y = Math.PI / 2;
         planeX.checkCollisions = true;
-        var planeXC = BABYLON.Mesh.CreatePlane("planeXC", 1100, this.scene);
+        var planeXC = BABYLON.Mesh.CreatePlane("planeXC", 1000, this.scene);
         planeXC.position.y = 500;
-        planeXC.position.x = -501;
+        planeXC.position.x = -500.5;
         planeXC.rotation.y = -Math.PI / 2;
         planeXC.checkCollisions = true;
         //地板
-        var ground = BABYLON.Mesh.CreateGround("ground", 1000, 1000, 2, this.scene);
+        var ground = BABYLON.Mesh.CreateGround("ground", 1010, 1010, 2, this.scene);
         ground.checkCollisions = true;
         var materialPlane = new BABYLON.StandardMaterial("texturePlane", this.scene);
         materialPlane.diffuseTexture = new BABYLON.Texture("asset/image/grass.jpg", this.scene);
@@ -123,7 +127,7 @@ var SOI2 = {
         this.tank.material.diffuseColor = new BABYLON.Color3(32 / 255, 178 / 255, 170 / 255);
 
         //背景音乐
-        var music = new BABYLON.Sound("Fighting", "asset/music/background.mp3", this.scene, null, { loop: true, autoplay: true});
+        //var music = new BABYLON.Sound("Fighting", "asset/music/background.mp3", this.scene, null, { loop: true, autoplay: true});
     },
 
     //游戏逻辑更新
@@ -141,6 +145,9 @@ var SOI2 = {
 
 document.addEventListener("DOMContentLoaded", function () {
     if (BABYLON.Engine.isSupported()) {
+        var name = window.location.search;
+        name = name.substring(name.indexOf('?') + 1, name.length);
+        alert(name + ",欢迎您进入钢铁之魂战场！");
         SOI2.init();
     } else {
         alert("您的浏览器无法运行游戏");

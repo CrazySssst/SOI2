@@ -92,7 +92,7 @@ var SOI2 = {
         skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
         skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
         skybox.material = skyboxMaterial;
-        skybox.position.y = 400;
+        skybox.position.y = 100;
         //边界挡板
         var planeZ = BABYLON.Mesh.CreatePlane("planeZ", 1000, this.scene);
         planeZ.position.y = 500;
@@ -145,9 +145,6 @@ var SOI2 = {
 
 document.addEventListener("DOMContentLoaded", function () {
     if (BABYLON.Engine.isSupported()) {
-        var name = window.location.search;
-        name = name.substring(name.indexOf('?') + 1, name.length);
-        alert(name + ",欢迎您进入钢铁之魂战场！");
         SOI2.init();
     } else {
         alert("您的浏览器无法运行游戏");

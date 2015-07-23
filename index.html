@@ -11,7 +11,7 @@
 <body style="background-image: url(asset/image/background.jpg); background-position: center; background-repeat: no-repeat;">
 <!--标题-->
 <div style="position:absolute;top:55%;left:50%;margin:-50px 0 0 -300px;width:600px;height:100px;">
-    <h1 id="title" style="color:#ffffff; font-size:46px;text-align:center">Soul of Iron  Ⅱ</h1>
+    <h1 id="title" style="color:#ffffff; font-size:46px;text-align:center">Soul of Iron Ⅱ</h1>
 </div>
 <!--版本号-->
 <div style="position:absolute;top:61%;left:50%;margin:-20px 0 0 -20px;width:40px;height:40px;">
@@ -24,12 +24,12 @@
             background: url(asset/image/search_box.png) repeat-x;"/>
 
     <h3 style="color:#ffffff; font-size:10px;">密码:</h3>
-    <input type="text" id="password" autocomplete="off" style="width: 180px;height: 25px;display: inline-block;vertical-align: top;font: 15px/17px arial;padding: 0;border: 0;outline: 0;
+    <input type="password" id="password" autocomplete="off" style="width: 180px;height: 25px;display: inline-block;vertical-align: top;font: 15px/17px arial;padding: 0;border: 0;outline: 0;
             background: url(asset/image/search_box.png) repeat-x;"/>
     <br><br>
 
     <input type="submit" id="login" value="   登录   " onclick="login()"
-           style="color:#000000;opacity:0.80;padding:3px 20px;cursor:pointer;"/>
+           style="height: 22px;line-height: 15px;padding: 3px 20px;background-color: #2C97E8;color: #fff;display: inline-block;cursor: pointer;"/>
     <script type="text/javascript">
         function login() {
             var name = document.getElementById("username").value;
@@ -39,7 +39,7 @@
             else {
                 AV.User.logIn(name, password, {
                     success: function (user) {
-                        window.location.href = "game.html?" + user.getUsername();
+                        window.location.href = "join.html?" + user.getUsername();
                     },
                     error: function (user, error) {
                         Ext.MessageBox.show({title: "", msg: "您的用户名或密码不对哦", icon: Ext.Msg.ERROR, buttons: Ext.Msg.OK});
@@ -50,7 +50,7 @@
     </script>
 
     <input type="submit" id="register" value="   注册   " onclick="register()"
-           style="color:#000000;opacity:0.80;padding:3px 20px;cursor:pointer;"/>
+           style="height: 22px;line-height: 15px;padding: 3px 20px;background-color: #2C97E8;color: #fff;display: inline-block;cursor: pointer;"/>
     <script type="text/javascript">
         function register() {
             Ext.MessageBox.prompt("玩家注册", "请您输入昵称", function (btn, text) {

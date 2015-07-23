@@ -1,0 +1,42 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <script src="https://cdn1.lncld.net/static/js/av-mini-0.5.5.js"></script>
+    <audio src="asset/music/background2.mp3" autoplay="autoplay" loop="loop"></audio>
+</head>
+<body style="background-image: url(asset/image/background2.jpg); background-position: center; background-repeat: no-repeat;">
+<div style="position:absolute;top:40%;left:50%;margin:-50px 0 0 -150px;width:300px;height:100px;">
+    <h3 style="color:#ffffff; font-size:10px;">请您选择坦克类型:</h3>
+    <input type="radio" name="tank" value="tankA" id="tankA"/>
+    <label for="tankA" style="color:#ffffff">侦察战车：高行动力，低战斗力</label><br/>
+    <input type="radio" name="tank" value="tankB" id="tankB" checked="checked"/>
+    <label for="tankB" style="color:#ffffff">重型坦克：各项性能均衡</label><br/>
+    <input type="radio" name="tank" value="tankC" id="tankC"/>
+    <label for="tankC" style="color:#ffffff">自行火炮：高杀伤力，低行动力</label><br/>
+</div>
+<div style="position:absolute;top:55%;left:50%;margin:-50px 0 0 -150px;width:300px;height:100px;">
+    <h3 style="color:#ffffff; font-size:10px;">请您输入房间名称:</h3>
+    <input type="text" id="roomname" autocomplete="off" style="width: 240px;height: 25px;display: inline-block;vertical-align: top;font: 15px/17px arial;padding: 0;border: 0;outline: 0;
+            background: url(asset/image/search_box.png) repeat-x;"/>
+    <br/><br/>
+    <input type="submit" id="build" value="   建立战场   " onclick="build()"
+           style="height: 30px;line-height: 15px;padding: 3px 20px;background-color: #2C97E8;color: #fff;display: inline-block;cursor: pointer;"/>
+    <input type="submit" id="join" value="   加入战场   " onclick="join()"
+           style="height: 30px;line-height: 15px;padding: 3px 20px;background-color: #2C97E8;color: #fff;display: inline-block;cursor: pointer;"/>
+</div>
+<script type="text/javascript">
+    var name = window.location.search;
+    name = name.substring(name.indexOf('?') + 1, name.length);
+    alert(name + ",欢迎您进入钢铁之魂战场！");
+
+    function build(){
+
+    }
+
+    function join(){
+        window.location.href = "game.html?" + name;
+    }
+</script>
+</body>
+</html>

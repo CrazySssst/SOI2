@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>SOI2</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/style.css">
+
+    <script src="../lib/babylon.js"></script>
+    <script src="https://cdn1.lncld.net/static/js/av-mini-0.5.5.js"></script>
+    <script src="../lib/AV.realtime.js"></script>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<img id="gunsight" src="../asset/image/viseur.png"/>
+
+<script src="../js/SOI2.js"></script>
+<script src="../js/object/shell.js"></script>
+<script src="../js/object/tank.js"></script>
+<script src="../js/manage/mapControl.js"></script>
+<script src="../js/manage/shellControl.js"></script>
+<script src="../js/manage/tankControl.js"></script>
+<script src="../js/support/commControl.js"></script>
+<script src="../js/support/commandControl.js"></script>
+<script src="../js/support/soundControl.js"></script>
+<script>
+    var game = new SOI2();
+
+    //游戏启动点
+    document.addEventListener("DOMContentLoaded", function () {
+        if (BABYLON.Engine.isSupported()) {
+            game.init();
+
+            //鼠标锁定
+            // On click event, request pointer lock
+            game.canvas.addEventListener("click", function (evt) {
+                if (game.canvas.requestPointerLock
+                        || game.canvas.msRequestPointerLock
+                        || game.canvas.mozRequestPointerLock
+                        || game.canvas.webkitRequestPointerLock) {
+                    game.canvas.requestPointerLock();
+                }
+            }, false);
+            // Event listener when the pointerlock is updated (or removed by pressing ESC for example).
+            var pointerlockchange = function (event) {
+                // If the user is alreday locked
+                if (!(document.mozPointerLockElement === game.canvas
+                        || document.webkitPointerLockElement === game.canvas
+                        || document.msPointerLockElement === game.canvas
+                        || document.pointerLockElement === game.canvas)) {
+                    game.camera.detachControl(game.canvas);
+                } else {
+                    game.camera.attachControl(game.canvas);
+                }
+            };
+            document.addEventListener("pointerlockchange", pointerlockchange, false);
+            document.addEventListener("mspointerlockchange", pointerlockchange, false);
+            document.addEventListener("mozpointerlockchange", pointerlockchange, false);
+            document.addEventListener("webkitpointerlockchange", pointerlockchange, false);
+        } else {
+            alert("您的浏览器无法运行游戏");
+        }
+    }, false);
+
+    window.addEventListener("resize", function () {
+        game.engine.resize();
+    });
+</script>
+</body>
+</html>

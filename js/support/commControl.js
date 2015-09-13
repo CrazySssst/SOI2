@@ -3,16 +3,21 @@
  */
 
 //通信支持
-CommControl = function(){
-    this.appId = 'ahrxpnr9g6t01fd03iv5c8y69j5m1zo3oh3h12xoek336g2s';
-    this.clientId = '';
-    this.realtimeObj = null;
-    this.conversationObj = null;
+CommControl = function () {
+    this.appId = 'ahrxpnr9g6t01fd03iv5c8y69j5m1zo3oh3h12xoek336g2s';//应用id
+    this.clientId = '';//客户端ID
+    this.convName = '';//房间名称
+    this.isHost = false;//是否主机
+    this.rt = null;//通信对象
+    this.room = null;//房间对象
 }
-
-CommControl.prototype.createRoom = function(){
+//建立与服务器的通信
+CommControl.prototype.run = function (username, battlefield, ishost) {
+    this.clientId = username;
+    this.convName = battlefield;
+    this.isHost = ishost;
     // 创建实时通信实例
-    this.realtimeObj = AV.realtime({
+    this.rt = AV.realtime({
         appId: this.appId,
         clientId: this.clientId,
         // 是否开启 HTML 转义，SDK 层面开启防御 XSS
@@ -21,98 +26,129 @@ CommControl.prototype.createRoom = function(){
         // auth: authFun
     });
 
-    // 实时通信服务连接成功
-    this.realtimeObj.on('open', function () {
-        console.log('实时通信服务建立成功！');
+    game.commControl.work();
 
-        // 创建一个聊天室，conv 是 conversation 的缩写，也可以用 room 方法替换
-        this.conversationObj = this.CommControlObj.conv({
-            // 人员的 id
-            members: [
-                'LeanCloud02'
-            ],
-            // 默认名字
-            name: 'LeanCloud-Room',
-            // 默认的属性，可以放 Conversation 的一些初始值等
-            attr: {
-                test: 'testTitle'
-            }
-        }, function (data) {
-            if (data) {
-                console.log('Conversation 创建成功!', data);
-            }
-        });
+    this.rt.on('open', function () {
+        if (game.commControl.isHost) {
+            game.commControl.room = game.commControl.rt.room({
+                // 人员的 id
+                members: [
+                    game.commControl.clientId
+                ],
+                // 默认名字
+                name: game.commControl.convName,
+                // 默认的属性，可以放 Conversation 的一些初始值等
+                attr: {
+                    test: 'SOI2'
+                }
+            }, function (obj) {
+                var battlefield = new Battlefield();
+                battlefield.set("roomName", game.commControl.convName);
+                battlefield.set("roomId", obj.id);
+                battlefield.save(null, {
+                    success: function (data) {
+                        // 成功保存之后，执行其他逻辑
+                        game.commControl.room.count(function (num) {
+                            if (num % 2 == 1)
+                                game.userCamp = "R";
+                            else
+                                game.userCamp = "B";
+                            console.log("战场建立成功，选择阵营为" + game.userCamp);
+                        })
+                    },
+                    error: function (data, error) {
+                        // 失败之后执行其他逻辑
+                        // error 是 AV.Error 的实例，包含有错误码和描述信息.
+                        alert('Failed to create new object, with error message: ' + error.message);
+                    }
+                });
+            });
+        } else {
+            var query = new AV.Query(Battlefield);
+            query.equalTo("roomName", game.commControl.convName);
+            query.find({
+                success: function (results) {
+                    game.commControl.rt.room(results[0].attributes.roomId, function (object) {
+                        game.commControl.room = object;
+                        game.commControl.room.join(function () {
+                            game.commControl.room.count(function (num) {
+                                if (num % 2 == 1)
+                                    game.userCamp = "R";
+                                else
+                                    game.userCamp = "B";
+                                console.log("加入战场成功，选择阵营为" + game.userCamp);
+                            })
+                        });
+                    })
+                },
+                error: function (error) {
+                    alert("Error: " + error.code + " " + error.message);
+                }
+            });
+        }
+    })
+}
+//发送消息
+CommControl.prototype.send = function (to, from, com, data) {
+    // 向这个 Conversation 中发送消息
+    this.room.send({
+        to: to,
+        from: from,
+        command: com,
+        data: data
+    }, function (data) {
+//        console.log('发送的消息服务端已收收到：', data);
     });
 }
-
-CommControl.prototype.work = function() {
-// 当聊天断开时触发
-    this.CommControlObj.on('close', function () {
-        console.log('实时通信服务被断开！');
+//获取成员信息
+CommControl.prototype.getList = function () {
+    // 获取当前 Conversation 中的成员信息
+    this.room.list(function (data) {
+        console.log('列出当前 Conversation 的成员列表：', data);
+    });
+}
+//开启工作监听
+CommControl.prototype.work = function () {
+    // 监听连接断开
+    this.rt.on('close', function () {
+        alert('与战场连接断开');
+        //window.location.href = "login.html";
     });
 
-// 接收断线或者网络状况不佳的事件（断网可测试）
-    this.CommControlObj.on('reuse', function () {
-        console.log('正在重新连接。。。');
-    });
-
-// 当 Conversation 被创建时触发，当然您可以使用回调函数来处理，不一定要监听这个事件
-    this.CommControlObj.on('create', function (data) {
-
-        // 向这个 Conversation 添加新的用户
-        this.conversationObj.add([
-            'LeanCloud03', 'LeanCloud04'
-        ], function (data) {
-            console.log('成功添加用户：', data);
-        });
-
-        // 从这个 Conversation 中删除用户
-        this.conversationObj.remove('LeanCloud03', function (data) {
-            console.log('成功删除用户：', data);
-        });
-
-        // 向这个 Conversation 中发送消息
-        this.conversationObj.send({
-            abc: 123
-        }, function (data) {
-            console.log('发送的消息服务端已收收到：', data);
-        });
-
-        setTimeout(function () {
-            // 查看历史消息
-            this.conversationObj.log(function (data) {
-                console.log('查看当前 Conversation 最近的聊天记录：', data);
-            });
-        }, 2000);
-
-        // 当前 Conversation 接收到消息
-        this.conversationObj.receive(function (data) {
-            console.log('当前 Conversation 收到消息：', data);
-        });
-
-        // 获取当前 Conversation 中的成员信息
-        this.conversationObj.list(function (data) {
-            console.log('列出当前 Conversation 的成员列表：', data);
-        });
-
-        // 取得当前 Conversation 中的人数
-        this.conversationObj.count(function (num) {
-            console.log('取得当前的用户数量：' + num);
-        });
-    });
-
-// 监听所有用户加入的情况
-    this.CommControlObj.on('join', function (data) {
+    // 监听所有用户加入的情况
+    this.rt.on('join', function (data) {
         console.log('有用户加入某个当前用户在的 Conversation：', data);
+        if (game.isHost) {
+            game.commControl.send(data.initBy, "Server", "initMap", game.mapControl.data);
+        }
     });
 
-// 监听所有用户离开的情况
-    this.CommControlObj.on('left', function (data) {
+    // 监听所有用户离开的情况
+    this.rt.on('left', function (data) {
         console.log('有用户离开某个当前用户在的 Conversation：', data);
     });
 
-// 监听所有 Conversation 中发送的消息
-    this.CommControlObj.on('message', function (data) {
+    // 监听所有 Conversation 中发送的消息
+    this.rt.on('message', function (data) {
         console.log('某个当前用户在的 Conversation 接收到消息：', data);
+        if (!game.isHost && data.msg.from == "Server") {
+            if (data.msg.to == game.userName && data.msg.command == "initMap") {
+                console.log("服务器通知初始化地图");
+                game.mapControl.data = data.msg.data;
+                game.mapControl.drawMap(game.scene);
+            }
+            if (data.msg.command == "updateTank"){
+                game.tankControl.clientUpdate(data.msg.data);
+            }
+        }
+        if (game.isHost && data.msg.to == "Server") {
+            if (data.msg.command == "newTank"){
+                var md = data.msg.data;
+                game.tankControl.addTank(game.scene, game.userName, md.user, md.camp, md.position, md.type, game.isHost, game.commControl);
+            }
+            if (data.msg.command == "updateTankPosition"){
+                game.tankControl.updateTankPosition(data.msg.from, data.msg.data);
+            }
+        }
     });
 }

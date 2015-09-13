@@ -34,28 +34,28 @@ Tank.prototype.create = function (scene, user, camp, position, type) {
         this.shellSpeed = 40;//炮弹速度
         this.shootSpeed = 3;//攻击速度
         this.rotateSpeed = 5000;//旋转速度
-        this.moveSpeed = 4;//坦克速度
+        this.moveSpeed = 5;//坦克速度
         this.protectDamage = 7;//防御减伤
     } else if (this.type == "tankB") {
         this.attackDamage = 50;//攻击伤害
         this.shellSpeed = 60;//炮弹速度
         this.shootSpeed = 4;//攻击速度
         this.rotateSpeed = 7000;//旋转速度
-        this.moveSpeed = 2;//坦克速度
+        this.moveSpeed = 3;//坦克速度
         this.protectDamage = 15;//防御减伤
     } else {
         this.attackDamage = 70;//攻击伤害
         this.shellSpeed = 80;//炮弹速度
         this.shootSpeed = 6;//攻击速度
         this.rotateSpeed = 9000;//旋转速度
-        this.moveSpeed = 1;//坦克速度
+        this.moveSpeed = 2;//坦克速度
         this.protectDamage = 0;//防御减伤
     }
     //加载坦克模型
     this.object = BABYLON.Mesh.CreateBox(this.user, 6.0, scene);
     this.object.position = position;
     var material = new BABYLON.StandardMaterial("tankMaterial", scene);
-    if (this.camp == "Red"){
+    if (this.camp == "R"){
         material.diffuseColor = new BABYLON.Color3(255 / 255, 10 / 255, 10 / 255);
     }else{
         material.diffuseColor = new BABYLON.Color3(32 / 255, 178 / 255, 170 / 255);

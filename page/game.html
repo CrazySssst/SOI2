@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>SOI2</title>
 
-    <link rel="stylesheet" type="text/css" href="../css/style.css">
+    <link rel="stylesheet" type="text/css" href="../css/game.css">
 
     <script src="../lib/babylon.js"></script>
     <script src="https://cdn1.lncld.net/static/js/av-mini-0.5.5.js"></script>
@@ -14,9 +14,17 @@
 <canvas id="gameCanvas"></canvas>
 <img id="gunsight" src="../asset/image/viseur.png"/>
 
+<div id="information">
+    <label id="info_name" style="color:#ffffff; font-size:15px;"></label><br><br>
+    <label id="info_life" style="color:#ffffff; font-size:15px;"></label><br>
+    <label id="info_position" style="color:#ffffff; font-size:15px;"></label>
+</div>
+
 <script src="../js/SOI2.js"></script>
+<script src="../js/object/data.js"></script>
 <script src="../js/object/shell.js"></script>
 <script src="../js/object/tank.js"></script>
+<script src="../js/manage/infoControl.js"></script>
 <script src="../js/manage/mapControl.js"></script>
 <script src="../js/manage/shellControl.js"></script>
 <script src="../js/manage/tankControl.js"></script>
@@ -25,6 +33,7 @@
 <script src="../js/support/soundControl.js"></script>
 <script>
     var game = new SOI2();
+    AV.initialize("ahrxpnr9g6t01fd03iv5c8y69j5m1zo3oh3h12xoek336g2s", "uk5g0fhd8bwe0y1pe9xv55ft321yglbcctpbbbmn3160eq84");
 
     //游戏启动点
     document.addEventListener("DOMContentLoaded", function () {

@@ -8,7 +8,6 @@ CommandControl = function () {
 
 //设定指令
 CommandControl.prototype.run = function () {
-    //键盘响应
     document.onkeydown = function (event) {
         var e = event || window.event || arguments.callee.caller.arguments[0];
         if (e && e.keyCode == 87) { // 按 W

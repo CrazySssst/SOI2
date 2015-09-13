@@ -27,12 +27,14 @@ SOI2 = function () {
 SOI2.prototype.init = function () {
     //加载玩家信息
     this.userName = window.localStorage.getItem("username");
-    this.userCamp = window.localStorage.getItem("camp");
     this.tankType = window.localStorage.getItem("tanktype");
     this.battlefield = window.localStorage.getItem("roomname");
-    this.isHost = window.localStorage.getItem("host");
+    if (window.localStorage.getItem("host") == "true"){
+        this.isHost = true;
+    }else{
+        this.isHost = false;
+    }
     window.localStorage.removeItem("username");
-    window.localStorage.removeItem("camp");
     window.localStorage.removeItem("tanktype");
     window.localStorage.removeItem("roomname");
     window.localStorage.removeItem("host");
@@ -46,19 +48,24 @@ SOI2.prototype.init = function () {
     //初始化灯光
     this.light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), this.scene);
     //初始化加载项
+    this.infoControl = new InfoControl();
     this.mapControl = new MapControl();
     this.shellControl = new ShellControl();
     this.tankControl = new TankControl();
     this.commandControl = new CommandControl();
     this.commControl = new CommControl();
     this.soundControl = new SoundControl();
-    //加载游戏内容
-    this.load();
-    //建立60FPS的游戏循环
-    this.engine.runRenderLoop(function () {
-        game.update();
-        game.draw();
-    });
+    //连接战场
+    this.commControl.run(this.userName,this.battlefield,this.isHost);
+    setTimeout(function(){
+        //加载游戏内容
+        game.load();
+        //建立60FPS的游戏循环
+        game.engine.runRenderLoop(function () {
+            game.update();
+            game.draw();
+        });
+    }, 500);
 }
 
 //游戏内容加载
@@ -66,15 +73,15 @@ SOI2.prototype.load = function () {
     //加载地图
     if (this.isHost) {
         this.mapControl.createRandomMap();
+        this.mapControl.drawMap(this.scene);
     }
-    this.mapControl.drawMap(this.scene);
     //加载交互命令
     this.commandControl.run(this.canvas, this.camera);
     //加载背景音乐
     this.soundControl.playBackgroundMusic(this.scene);
 
     //加载天空盒
-    var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, this.scene);
+    var skybox = BABYLON.Mesh.CreateBox("skyBox", 2000.0, this.scene);
     var skyboxMaterial = new BABYLON.StandardMaterial("skyBox", this.scene);
     skyboxMaterial.backFaceCulling = false;
     skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("../asset/image/skybox/skybox", this.scene);
@@ -83,41 +90,28 @@ SOI2.prototype.load = function () {
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     skybox.material = skyboxMaterial;
     skybox.position.y = 100;
-    //天空盒附加边界挡板
-    var planeZ = BABYLON.Mesh.CreatePlane("planeZ", 1000, this.scene);
-    planeZ.position.y = 500;
-    planeZ.position.z = 500.5;
-    planeZ.checkCollisions = true;
-    var planeZC = BABYLON.Mesh.CreatePlane("planeZC", 1000, this.scene);
-    planeZC.position.y = 500;
-    planeZC.position.z = -500.5;
-    planeZC.checkCollisions = true;
-    var planeX = BABYLON.Mesh.CreatePlane("planeX", 1000, this.scene);
-    planeX.position.y = 500;
-    planeX.position.x = 500.5;
-    planeX.rotation.y = Math.PI / 2;
-    planeX.checkCollisions = true;
-    var planeXC = BABYLON.Mesh.CreatePlane("planeXC", 1000, this.scene);
-    planeXC.position.y = 500;
-    planeXC.position.x = -500.5;
-    planeXC.rotation.y = -Math.PI / 2;
-    planeXC.checkCollisions = true;
 
     //加载地板
-    var ground = BABYLON.Mesh.CreateGround("ground", 1010, 1010, 2, this.scene);
+    var ground = BABYLON.Mesh.CreateGround("ground", 2010, 2010, 2, this.scene);
     ground.checkCollisions = true;
     var materialPlane = new BABYLON.StandardMaterial("texturePlane", this.scene);
-    materialPlane.diffuseTexture = new BABYLON.Texture("../asset/image/grass.jpg", this.scene);
-    materialPlane.diffuseTexture.uScale = 10;//Repeat 10 times on the Vertical Axes
-    materialPlane.diffuseTexture.vScale = 10;//Repeat 10 times on the Horizontal Axes
+    materialPlane.diffuseTexture = new BABYLON.Texture("../asset/image/map/soil.jpg", this.scene);
+    materialPlane.diffuseTexture.uScale = 50;//Repeat 50 times on the Vertical Axes
+    materialPlane.diffuseTexture.vScale = 50;//Repeat 50 times on the Horizontal Axes
     materialPlane.backFaceCulling = false;//Allways show the front and the back of an element
     ground.material = materialPlane;
 
+    //设置出生点
+    var startPoint;
+    if (this.userCamp == "R")
+        startPoint = new BABYLON.Vector3(Math.random() * 200 - 100, 3, 500);
+    else
+        startPoint = new BABYLON.Vector3(Math.random() * 200 - 100, 3, -500);
     //新建玩家坦克
-    this.tankControl.addTank(this.scene, this.userName, this.userName, this.userCamp, new BABYLON.Vector3(0, 7, 0), this.tankType);
+    this.tankControl.addTank(this.scene, this.userName, this.userName, this.userCamp, startPoint, this.tankType, this.isHost, this.commControl);
     //初始化相机
-    this.camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(0, 7, 0), this.scene);
-    this.camera.setTarget(new BABYLON.Vector3(0, 7, 10));
+    this.camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(startPoint.x, 7, startPoint.z), this.scene);
+    this.camera.setTarget(new BABYLON.Vector3(0, 7, 0));
     this.camera.attachControl(this.canvas);
     this.camera.ellipsoid = new BABYLON.Vector3(3, 3, 3);
     this.camera.checkCollisions = true;
@@ -133,10 +127,15 @@ SOI2.prototype.load = function () {
 
 //游戏逻辑更新
 SOI2.prototype.update = function () {
-    this.tankControl.myTankMove(this.camera);
+    this.tankControl.myTankMove(this.camera, this.commControl, this.userName, this.isHost);
+//    if (Math.random() * 4 < 1){
+//        this.tankControl.serverUpdate(this.commControl);
+//    }
+    this.infoControl.update(this.tankControl.myTank);
 }
 
 //游戏画面绘制
 SOI2.prototype.draw = function () {
+    this.tankControl.draw();
     this.scene.render();
 }

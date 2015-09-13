@@ -14,7 +14,10 @@ MapControl.prototype.createRandomMap = function () {
         var box = {
             size: Math.random() * 80 + 10,
             x: -400 + Math.random() * 800,
-            z: -400 + Math.random() * 800
+            z: -400 + Math.random() * 800,
+            colorX: Math.random(),
+            colorY: Math.random(),
+            colorZ: Math.random()
         }
         this.data[this.data.length] = box;
     }
@@ -28,8 +31,8 @@ MapControl.prototype.drawMap = function (scene) {
         box.position.z = this.data[i].z;
         box.checkCollisions = true;
         var material = new BABYLON.StandardMaterial("mapboxMaterial" + i, scene);
-        material.diffuseColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
-        material.specularColor = new BABYLON.Color3(Math.random(), Math.random(), Math.random());
+        material.diffuseColor = new BABYLON.Color3(this.data[i].colorX, this.data[i].colorY, this.data[i].colorZ);;
+        material.specularColor = new BABYLON.Color3(this.data[i].colorX, this.data[i].colorY, this.data[i].colorZ);;
         box.material = material;
     }
 }

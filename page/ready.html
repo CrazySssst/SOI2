@@ -44,13 +44,16 @@
     }
 
     function join() {
-        window.localStorage.setItem("host", false);
-        start();
+        if (document.getElementById("roomname").value == "")
+            alert("请输入房间名");
+        else {
+            window.localStorage.setItem("host", false);
+            start();
+        }
     }
 
     function start() {
         window.localStorage.setItem("roomname", document.getElementById("roomname").value);
-        window.localStorage.setItem("camp", "Blue");//此处应该根据当前玩家人数自动分配阵营
         var obj = document.getElementsByName("tank");
         for (var i = 0; i < obj.length; i++) {
             if (obj[i].checked)
